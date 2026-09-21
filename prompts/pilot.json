@@ -1,0 +1,33 @@
+{
+  "experiment_id": "pilot_math_001",
+  "task_type": "arithmetic_sanity_check",
+  "question": "What is 17 multiplied by 24?",
+  "expected_answer": "408",
+  "prompts": [
+    {
+      "id": "p1",
+      "category": "lexical",
+      "text": "Calculate 17 multiplied by 24. Give only the final answer."
+    },
+    {
+      "id": "p2",
+      "category": "lexical",
+      "text": "What is the result of multiplying 17 by 24? Give only the final answer."
+    },
+    {
+      "id": "p3",
+      "category": "lexical",
+      "text": "Find the product of 17 and 24. Give only the final answer."
+    },
+    {
+      "id": "p4",
+      "category": "politeness",
+      "text": "Please calculate 17 times 24. Give only the final answer."
+    },
+    {
+      "id": "p5",
+      "category": "framing",
+      "text": "Determine the value obtained by multiplying 17 by 24. Give only the final answer."
+    }
+  ]
+}
