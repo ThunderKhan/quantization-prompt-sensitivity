@@ -78,6 +78,8 @@ One simple arithmetic question × five prompts.
 
 Purpose: verify the pipeline.
 
+**Evaluation note:** Stage 0 uses a task-specific numeric-token evaluator. It records both the extracted candidate numbers and the complete raw response. This evaluator is not sufficient for the final multi-task experiment.
+
 ### Stage 1 — small pilot
 
 20 task items × five prompt variants.
@@ -193,6 +195,7 @@ Every generation should retain:
 - raw response,
 - parsed answer,
 - correctness,
+- evaluation mode,
 - latency,
 - software/version metadata where available.
 
