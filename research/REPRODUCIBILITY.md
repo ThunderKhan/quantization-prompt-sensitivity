@@ -34,6 +34,7 @@ Every run must record:
 - seed,
 - max output tokens,
 - thinking setting,
+- evaluation mode,
 - backend/runtime settings where available.
 
 ## Raw-data policy
@@ -71,6 +72,12 @@ Run the pilot:
 
 ```powershell
 python -m qps.run_pilot
+```
+
+For strict whole-response matching:
+
+```powershell
+python -m qps.run_pilot --evaluation-mode exact
 ```
 
 ## Data provenance
