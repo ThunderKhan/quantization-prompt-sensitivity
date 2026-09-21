@@ -1,56 +1,73 @@
 # Quantization Prompt Sensitivity
 
-Research code for studying whether lower-precision inference changes the robustness of small language models to semantics-preserving prompt variations.
+Research code and documentation for studying whether lower-precision inference changes the robustness of small language models to semantics-preserving prompt variations.
 
 ## Working research question
 
-> Does lower-precision inference increase the sensitivity of small language models to semantics-preserving changes in prompt wording?
+> Does lower-precision inference change the sensitivity of small language models to semantics-preserving changes in prompt wording?
 
-### Initial research questions
+The word **change** is intentional. We will not assume that quantization increases sensitivity; the experiment is designed to test the direction and magnitude of any effect.
 
-- **RQ1:** Do semantics-preserving prompt variations change task performance?
-- **RQ2:** Which prompt perturbation categories produce the greatest instability?
-- **RQ3:** Does quantization increase prompt sensitivity?
-- **RQ4:** Can average task accuracy hide substantial prompt instability?
+## Repository structure
+
+```text
+quantization-prompt-sensitivity/
+│
+├── README.md
+│
+├── research/
+│   ├── CONTEXT.md
+│   ├── RESEARCH_QUESTION.md
+│   ├── LITERATURE_REVIEW.md
+│   ├── HYPOTHESES.md
+│   ├── EXPERIMENT_PROTOCOL.md
+│   ├── EXPERIMENT_LOG.md
+│   ├── RESULTS.md
+│   ├── DISCUSSION.md
+│   ├── LIMITATIONS.md
+│   └── REPRODUCIBILITY.md
+│
+├── experiments/
+├── src/
+├── scripts/
+├── data/
+├── results/
+├── figures/
+├── requirements.txt
+└── pyproject.toml
+```
 
 ## Current phase
 
 **Phase 0 — pipeline validation**
 
-We start with a tiny deterministic pilot against Ollama and `qwen3:0.6b`.
+The current implementation uses Ollama and `qwen3:0.6b` to validate the experiment pipeline.
 
-The first goal is not to produce a publishable result. It is to verify that:
+The pilot is not a scientific result. It verifies:
 
-1. prompts are loaded reproducibly,
-2. Ollama inference is reachable,
-3. raw responses are preserved,
-4. evaluation metadata is recorded,
-5. the experiment can be rerun without changing the protocol.
+- reproducible prompt loading,
+- Ollama API connectivity,
+- fixed decoding parameters,
+- raw-response preservation,
+- result serialization,
+- evaluation plumbing.
 
-## Planned experiment
+## Initial research questions
 
-`Model × Precision × Prompt Variant × Task`
+- **RQ1:** Do semantics-preserving prompt variations change task performance?
+- **RQ2:** Which prompt perturbation categories produce the greatest instability?
+- **RQ3:** Does quantization change prompt sensitivity?
+- **RQ4:** Can aggregate accuracy conceal substantial prompt instability?
 
-The broader study will compare small models and inference precisions after the pilot is stable.
+## Development workflow
 
-## Local requirements
-
-- Python 3.10+
-- Ollama
-- `qwen3:0.6b`
-- Git
-
-The first pilot uses the Ollama HTTP API at `http://localhost:11434`.
-
-## Setup
-
-### 1. Pull the repository
+Pull the latest repository state:
 
 ```powershell
-git pull
+git pull origin main
 ```
 
-### 2. Create a virtual environment
+Create a virtual environment:
 
 ```powershell
 python -m venv .venv
@@ -58,54 +75,54 @@ python -m venv .venv
 pip install -e .
 ```
 
-### 3. Verify Ollama
+Verify the local model:
 
 ```powershell
 ollama list
 ollama run qwen3:0.6b --think=false
 ```
 
-### 4. Run the first pilot
+Run the pilot:
 
 ```powershell
 python -m qps.run_pilot
 ```
 
-By default this runs the five-prompt arithmetic sanity check and writes raw JSONL plus a summary CSV under `results/`.
-
 ## Reproducibility rules
 
-- Do not edit raw outputs after an experiment.
-- Keep the exact prompt text used for every generation.
-- Record model, experiment configuration, timestamp, and run ID.
-- Never overwrite a previous run.
+- Never modify raw experiment outputs after collection.
+- Record the exact prompt text and configuration for each run.
+- Record model, precision, dataset, prompt-set version, decoding settings, and run ID.
+- Never overwrite previous runs.
+- Document protocol changes in `research/EXPERIMENT_LOG.md`.
 - Treat hypotheses as testable claims, not expected outcomes.
 
-## Repository structure
+## Research workflow
 
 ```text
-quantization-prompt-sensitivity/
-├── analysis/
-├── data/
-├── experiments/
-├── figures/
-├── literature/
-├── paper/
-├── prompts/
-│   └── pilot.json
-├── results/
-│   └── raw/
-├── src/
-│   └── qps/
-│       ├── __init__.py
-│       ├── evaluation.py
-│       ├── ollama_client.py
-│       └── run_pilot.py
-├── pyproject.toml
-├── research_question.md
-└── .gitignore
+Literature
+    ↓
+Research Question
+    ↓
+Hypotheses
+    ↓
+Experiment Protocol
+    ↓
+Pilot
+    ↓
+Protocol Lock
+    ↓
+Full Experiments
+    ↓
+Statistical Analysis
+    ↓
+Results
+    ↓
+Discussion / Limitations
+    ↓
+Paper
 ```
 
 ## Status
 
-Research protocol is being developed. No scientific conclusions should be inferred from the pilot until the full protocol and evaluation suite are finalized.
+Research protocol is being developed. No scientific conclusions should be inferred from pilot results until the full experimental design and evaluation procedure are finalized.
