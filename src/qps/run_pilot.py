@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import uuid
 
-from qps.evaluation import accuracy, exact_match
+from qps.evaluation import accuracy, evaluate_answer
 from qps.ollama_client import OllamaClient
 
 
@@ -42,6 +42,8 @@ def write_summary(path: Path, rows: list[dict]) -> None:
         "prompt_id",
         "category",
         "correct",
+        "evaluation_mode",
+        "candidate_answers",
         "latency_ms",
         "response",
     ]
@@ -76,7 +78,12 @@ def run(args: argparse.Namespace) -> None:
 
         finished = datetime.now(timezone.utc)
         latency_ms = int((finished - started).total_seconds() * 1000)
-        correct = exact_match(result.response, config["expected_answer"])
+
+        evaluation = evaluate_answer(
+            result.response,
+            config["expected_answer"],
+            mode=args.evaluation_mode,
+        )
 
         raw_rows.append(
             {
@@ -89,7 +96,10 @@ def run(args: argparse.Namespace) -> None:
                 "prompt": prompt["text"],
                 "expected_answer": config["expected_answer"],
                 "response": result.response,
-                "correct": correct,
+                "correct": evaluation["correct"],
+                "evaluation_mode": evaluation["evaluation_mode"],
+                "candidate_answers": evaluation["candidate_answers"],
+                "normalized_response": evaluation["normalized_response"],
                 "latency_ms": latency_ms,
                 "think": args.think,
                 "temperature": args.temperature,
@@ -109,7 +119,9 @@ def run(args: argparse.Namespace) -> None:
                 "seed": args.seed,
                 "prompt_id": prompt["id"],
                 "category": prompt["category"],
-                "correct": int(correct),
+                "correct": int(evaluation["correct"]),
+                "evaluation_mode": evaluation["evaluation_mode"],
+                "candidate_answers": "|".join(evaluation["candidate_answers"]),
                 "latency_ms": latency_ms,
                 "response": result.response,
             }
@@ -126,6 +138,7 @@ def run(args: argparse.Namespace) -> None:
     print(f"Run ID: {run_id}")
     print(f"Model: {args.model}")
     print(f"Prompts: {len(summary_rows)}")
+    print(f"Evaluation: {args.evaluation_mode}")
     print(f"Accuracy: {overall_accuracy:.3f}")
     print(f"Raw results: {raw_path}")
     print(f"Summary: {summary_path}")
@@ -138,6 +151,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--timeout", type=int, default=120)
+    parser.add_argument(
+        "--evaluation-mode",
+        choices=["numeric_token", "exact"],
+        default="numeric_token",
+        help="How to evaluate the pilot answer.",
+    )
     return parser
 
 
