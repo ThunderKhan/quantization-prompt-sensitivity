@@ -11,6 +11,15 @@ This file records protocol decisions, experiment runs, failures, and changes.
 - Important observation: the interactive Ollama session had thinking enabled and produced unstable/incorrect arithmetic reasoning. The automated runner therefore uses the Ollama API with thinking disabled and temperature 0 for the initial pilot.
 - No scientific conclusion was drawn from this observation.
 
+## 2026-09-22 — Evaluator hardening
+
+- The first automated pilot completed successfully but reported 0.000 accuracy.
+- Because raw responses had not yet been inspected, the 0.000 score was **not interpreted as a model result**.
+- The evaluator was changed from strict whole-response equality to an auditable numeric-token evaluator for the arithmetic sanity check.
+- Exact-match evaluation remains available via `--evaluation-mode exact`.
+- The raw response, normalized response, extracted candidate answers, and evaluation mode are now recorded.
+- This is a pipeline correction, not a scientific result.
+
 ## Protocol revisions
 
 Use this format for every substantive revision:
